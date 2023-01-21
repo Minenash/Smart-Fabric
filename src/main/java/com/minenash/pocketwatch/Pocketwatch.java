@@ -3,14 +3,17 @@ package com.minenash.pocketwatch;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+
+import com.minenash.pocketwatch.PocketwatchConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +25,19 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	private static final MinecraftClient client = MinecraftClient.getInstance();
 
-
 	@Override
 	public void onInitializeClient() {
 
+		CONFIG.whitelist().replaceAll(id -> new Identifier(id).toString());
+		CONFIG.subscribeToWhitelist( whitelist -> whitelist.replaceAll(id -> new Identifier(id).toString()));
+
 		HudRenderCallback.EVENT.register(new Identifier("smart-fabric:render"), (matrices, tickDelta) -> {
 			List<ItemStack> stacks = new ArrayList<>();
+
 			hotbar_loop:
-			for (int i = 9; i < 36 && stacks.size() < CONFIG.slotLimit(); i++) {
+			for (int i = 9; i < 40 && stacks.size() < CONFIG.slotLimit(); i++) {
 				ItemStack stack = client.player.getInventory().getStack(i);
-				if (CONFIG.whitelist().contains(Registry.ITEM.getId(stack.getItem()).toString())) {
+				if (CONFIG.whitelist().contains(Registries.ITEM.getId(stack.getItem()).toString())) {
 					for (ItemStack item : stacks)
 						if (ItemStack.canCombine(stack, item))
 							continue hotbar_loop;
@@ -43,12 +49,16 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 				return;
 
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 
 			int slots = stacks.size();
 			int baseX = client.getWindow().getScaledWidth() / 2 + (client.player.getMainArm() == Arm.RIGHT ? 99 : -119 - 18*(slots-1));
 			int y = client.getWindow().getScaledHeight() - 22;
+
+			if (FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance) {
+				y -= distance;
+			}
 
 			if (slots == 1)
 				drawTexture(matrices, baseX-1, y, 24, 23, 22, 22);
@@ -78,7 +88,7 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 		}
 
 		client.getItemRenderer().renderInGuiWithOverrides(client.player, stack, x, y, 1);
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		if (f > 0.0F) {
 			matrices.pop();
 			RenderSystem.applyModelViewMatrix();
