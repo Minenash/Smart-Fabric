@@ -59,6 +59,9 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 			if (FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance) {
 				y -= distance;
 			}
+			else if (FabricLoader.getInstance().getObjectShare().get("raised:hud") instanceof Integer distance) {
+				y -= distance;
+			}
 
 			if (slots == 1)
 				drawTexture(matrices, baseX-1, y, 24, 23, 22, 22);
@@ -70,13 +73,12 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 			}
 
 			for (int i = 0; i < slots; i++)
-				drawItem(stacks.get(i), baseX + i*18 + 2, y + 3);
+				drawItem(matrices, stacks.get(i), baseX + i*18 + 2, y + 3);
 
 		});
 	}
 
-	public void drawItem(ItemStack stack, int x, int y) {
-		MatrixStack matrices = RenderSystem.getModelViewStack();
+	public void drawItem(MatrixStack matrices, ItemStack stack, int x, int y) {
 		float f = (float)stack.getBobbingAnimationTime();
 		if (f > 0.0F) {
 			float g = 1.0F + f / 5.0F;
@@ -87,15 +89,14 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 			RenderSystem.applyModelViewMatrix();
 		}
 
-		client.getItemRenderer().renderInGuiWithOverrides(client.player, stack, x, y, 1);
+		client.getItemRenderer().renderInGuiWithOverrides(matrices, stack, x, y, 1);
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		if (f > 0.0F) {
 			matrices.pop();
-			RenderSystem.applyModelViewMatrix();
 		}
 
 		if (CONFIG.showDetails())
-			client.getItemRenderer().renderGuiItemOverlay(client.textRenderer, stack, x, y);
+			client.getItemRenderer().renderGuiItemOverlay(matrices, client.textRenderer, stack, x, y);
 	}
 
 }
