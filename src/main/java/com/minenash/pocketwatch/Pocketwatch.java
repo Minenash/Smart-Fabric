@@ -9,11 +9,11 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 import com.minenash.pocketwatch.PocketwatchConfig;
+import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 			hotbar_loop:
 			for (int i = 9; i < 40 && stacks.size() < CONFIG.slotLimit(); i++) {
 				ItemStack stack = client.player.getInventory().getStack(i);
-				if (CONFIG.whitelist().contains(Registries.ITEM.getId(stack.getItem()).toString())) {
+				if (CONFIG.whitelist().contains(Registry.ITEM.getId(stack.getItem()).toString())) {
 					for (ItemStack item : stacks)
 						if (ItemStack.canCombine(stack, item))
 							continue hotbar_loop;
@@ -49,7 +49,7 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 				return;
 
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 
 			int slots = stacks.size();
@@ -89,7 +89,7 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 		}
 
 		client.getItemRenderer().renderInGuiWithOverrides(client.player, stack, x, y, 1);
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		if (f > 0.0F) {
 			matrices.pop();
 			RenderSystem.applyModelViewMatrix();
