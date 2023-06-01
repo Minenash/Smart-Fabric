@@ -56,9 +56,10 @@ public class Pocketwatch extends DrawableHelper implements ClientModInitializer 
 			int baseX = client.getWindow().getScaledWidth() / 2 + (client.player.getMainArm() == Arm.RIGHT ? 99 : -119 - 18*(slots-1));
 			int y = client.getWindow().getScaledHeight() - 22;
 
-			if (FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance) {
+			if (FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance)
 				y -= distance;
-			}
+			else if (FabricLoader.getInstance().getObjectShare().get("raised:hud") instanceof Integer distance)
+				y -= distance;
 
 			if (slots == 1)
 				drawTexture(matrices, baseX-1, y, 24, 23, 22, 22);
