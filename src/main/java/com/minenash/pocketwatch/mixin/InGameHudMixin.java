@@ -14,7 +14,7 @@ public abstract class InGameHudMixin {
     @Shadow private int scaledWidth;
     @Shadow protected abstract PlayerEntity getCameraPlayer();
 
-    @ModifyArg(method = "renderHotbar", index = 1, at = @At(value = "INVOKE", ordinal = 4,target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
+    @ModifyArg(method = "renderHotbar", index = 1, at = @At(value = "INVOKE", ordinal = 4, target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
     private int moveIndicator(int p) {
         int offhandShift = getCameraPlayer().getOffHandStack().isEmpty() ? 0 : 29;
 
@@ -24,7 +24,7 @@ public abstract class InGameHudMixin {
 
     }
 
-    @ModifyArg(method = "renderHotbar", index = 1, at = @At(value = "INVOKE", ordinal = 5,target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
+    @ModifyArg(method = "renderHotbar", index = 1, at = @At(value = "INVOKE", ordinal = 5, target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
     private int moveIndicator2(int p) {
         int offhandShift = getCameraPlayer().getOffHandStack().isEmpty() ? 0 : 29;
 
