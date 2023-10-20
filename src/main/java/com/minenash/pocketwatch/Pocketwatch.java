@@ -1,12 +1,10 @@
 package com.minenash.pocketwatch;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Arm;
@@ -21,7 +19,8 @@ public class Pocketwatch implements ClientModInitializer {
 
 	public static final PocketwatchConfig CONFIG = PocketwatchConfig.createAndLoad();
 
-	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	private static final Identifier HOTBAR_TEXTURE = new Identifier("textures/gui/sprites/hud/hotbar.png");
+	private static final Identifier OFFHAND_TEXTURE = new Identifier("textures/gui/sprites/hud/hotbar_offhand_left.png");
 	private static final MinecraftClient client = MinecraftClient.getInstance();
 
 	@Override
@@ -59,12 +58,12 @@ public class Pocketwatch implements ClientModInitializer {
 			}
 
 			if (slots == 1)
-				context.drawTexture(WIDGETS_TEXTURE, baseX-1, y, 24, 23, 22, 22);
+				context.drawTexture(OFFHAND_TEXTURE, baseX-1, y, 0, 1, 22, 22, 29, 24);
 			else {
-				context.drawTexture(WIDGETS_TEXTURE, baseX-1, y, 24, 23, 21, 22);
+				context.drawTexture(OFFHAND_TEXTURE, baseX-1, y, 0, 1, 21, 22, 29, 24);
 				for (int i = 1; i < slots; i++)
-					context.drawTexture(WIDGETS_TEXTURE, baseX + i*18, y, 21, 0, 18, 22);
-				context.drawTexture(WIDGETS_TEXTURE, baseX + (slots)*18, y, 43, 23, 3, 22);
+					context.drawTexture(HOTBAR_TEXTURE, baseX + i*18, y, 21, 0, 18, 22, 182, 22);
+				context.drawTexture(OFFHAND_TEXTURE, baseX + (slots)*18, y, 19, 1, 3, 22, 29, 24);
 			}
 
 			for (int i = 0; i < slots; i++)
@@ -83,7 +82,6 @@ public class Pocketwatch implements ClientModInitializer {
 			context.getMatrices().translate(-(x + 8), -(y + 12), 0.0);
 		}
 		context.drawItem(stack, x, y);
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		if (f > 0.0F)
 			context.getMatrices().pop();
 
