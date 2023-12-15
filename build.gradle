@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.0-SNAPSHOT'
+	id 'fabric-loom' version '1.4-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -12,6 +12,7 @@ group = project.maven_group
 
 repositories {
 	maven { url 'https://maven.wispforest.io' }
+	maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
 dependencies {
@@ -23,6 +24,10 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
 	include "io.wispforest:owo-sentinel:${project.owo_version}"
+
+	modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") {
+		exclude module: "fabric-api"
+	}
 
 
 }
