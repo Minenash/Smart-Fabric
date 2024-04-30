@@ -37,7 +37,7 @@ public class Pocketwatch implements ClientModInitializer {
 				ItemStack stack = client.player.getInventory().getStack(i);
 				if (CONFIG.whitelist().contains(Registries.ITEM.getId(stack.getItem()).toString())) {
 					for (ItemStack item : stacks)
-						if (ItemStack.canCombine(stack, item))
+						if (ItemStack.areItemsAndComponentsEqual(stack, item))
 							continue hotbar_loop;
 					stacks.add(stack);
 				}

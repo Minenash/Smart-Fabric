@@ -5,6 +5,7 @@ import io.wispforest.owo.config.annotation.Hook;
 import io.wispforest.owo.config.annotation.Modmenu;
 import io.wispforest.owo.config.annotation.RangeConstraint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Modmenu(modId = "pocketwatch")
@@ -17,6 +18,6 @@ public class PocketwatchConfigModel {
     public int slotLimit = 3;
 
     @Hook
-    public List<String> whitelist = List.of("minecraft:clock", "minecraft:compass", "minecraft:recovery_compass");
+    public List<String> whitelist = new ArrayList<>(List.of("minecraft:clock", "minecraft:compass", "minecraft:recovery_compass"));
 
 }
