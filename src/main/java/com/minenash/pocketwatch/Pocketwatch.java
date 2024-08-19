@@ -19,17 +19,17 @@ public class Pocketwatch implements ClientModInitializer {
 
 	public static final PocketwatchConfig CONFIG = PocketwatchConfig.createAndLoad();
 
-	private static final Identifier HOTBAR_TEXTURE = new Identifier("textures/gui/sprites/hud/hotbar.png");
-	private static final Identifier OFFHAND_TEXTURE = new Identifier("textures/gui/sprites/hud/hotbar_offhand_left.png");
+	private static final Identifier HOTBAR_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar.png");
+	private static final Identifier OFFHAND_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
 	private static final MinecraftClient client = MinecraftClient.getInstance();
 
 	@Override
 	public void onInitializeClient() {
 
-		CONFIG.whitelist().replaceAll(id -> new Identifier(id).toString());
-		CONFIG.subscribeToWhitelist( whitelist -> whitelist.replaceAll(id -> new Identifier(id).toString()));
+		CONFIG.whitelist().replaceAll(id -> Identifier.of(id).toString());
+		CONFIG.subscribeToWhitelist( whitelist -> whitelist.replaceAll(id -> Identifier.of(id).toString()));
 
-		HudRenderCallback.EVENT.register(new Identifier("pocketwatch:render"), (context, tickDelta) -> {
+		HudRenderCallback.EVENT.register(Identifier.of("pocketwatch:render"), (context, tickDelta) -> {
 			List<ItemStack> stacks = new ArrayList<>();
 
 			hotbar_loop:
