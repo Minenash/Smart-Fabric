@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Arm;
@@ -13,6 +14,7 @@ import net.minecraft.util.Identifier;
 import com.minenash.pocketwatch.PocketwatchConfig;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Pocketwatch implements ClientModInitializer {
@@ -30,25 +32,33 @@ public class Pocketwatch implements ClientModInitializer {
 		CONFIG.subscribeToWhitelist( whitelist -> whitelist.replaceAll(id -> Identifier.of(id).toString()));
 
 		HudRenderCallback.EVENT.register(Identifier.of("pocketwatch:render"), (context, tickDelta) -> {
+			if (client.options.hudHidden)
+				return;
 			List<ItemStack> stacks = new ArrayList<>();
 
-			hotbar_loop:
-			for (int i = 9; i < 40 && stacks.size() < CONFIG.slotLimit(); i++) {
+			for (int i = 0; i < 40 && stacks.size() < CONFIG.slotLimit(); i++) {
 				ItemStack stack = client.player.getInventory().getStack(i);
-				if (CONFIG.whitelist().contains(Registries.ITEM.getId(stack.getItem()).toString())) {
-					for (ItemStack item : stacks)
-						if (ItemStack.areItemsAndComponentsEqual(stack, item))
-							continue hotbar_loop;
-					stacks.add(stack);
-				}
+				if (i >= 9)
+					addToList(stacks, stack);
+
+				var bundle = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
+				if (bundle != null)
+                    for (Iterator<ItemStack> it = bundle.iterate().iterator(); it.hasNext() && stacks.size() < CONFIG.slotLimit(); )
+                        addToList(stacks, it.next());
+
+				var container = stack.get(DataComponentTypes.CONTAINER);
+				if (container != null)
+					for (Iterator<ItemStack> it = container.iterateNonEmpty().iterator(); it.hasNext() && stacks.size() < CONFIG.slotLimit(); )
+						addToList(stacks, it.next());
+
 			}
 
 			if (stacks.isEmpty())
 				return;
 
 			int slots = stacks.size();
-			int baseX = client.getWindow().getScaledWidth() / 2 + (client.player.getMainArm() == Arm.RIGHT ? 99 : -119 - 18*(slots-1));
-			int y = client.getWindow().getScaledHeight() - 22;
+			int baseX = client.getWindow().getScaledWidth() / 2 + (client.player.getMainArm() == Arm.RIGHT ? 99 : -119 - 18*(slots-1)) + CONFIG.xOffset();
+			int y = client.getWindow().getScaledHeight() - 22 + CONFIG.yOffset();
 
 			if (FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance) {
 				y -= distance;
@@ -70,6 +80,15 @@ public class Pocketwatch implements ClientModInitializer {
 				drawItem(context, stacks.get(i), baseX + i*18 + 2, y + 3);
 
 		});
+	}
+
+	public void addToList(List<ItemStack> stacks, ItemStack stack) {
+		if (CONFIG.whitelist().contains(Registries.ITEM.getId(stack.getItem()).toString())) {
+			for (ItemStack item : stacks)
+				if (ItemStack.areItemsAndComponentsEqual(stack, item))
+					return;
+			stacks.add(stack.copy());
+		}
 	}
 
 	public void drawItem(DrawContext context, ItemStack stack, int x, int y) {

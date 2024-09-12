@@ -17,6 +17,9 @@ public class PocketwatchConfigModel {
     @RangeConstraint(min = 1, max = 6)
     public int slotLimit = 3;
 
+    public int xOffset = 0;
+    public int yOffset = 0;
+
     @Hook
     public List<String> whitelist = new ArrayList<>(List.of("minecraft:clock", "minecraft:compass", "minecraft:recovery_compass"));
 
