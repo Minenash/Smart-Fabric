@@ -28,7 +28,7 @@ public class Pocketwatch implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 
-		CONFIG.whitelist().removeAll(Arrays.asList("", null)).replaceAll(id -> new Identifier(id).toString());
+		CONFIG.whitelist().removeAll(Arrays.asList("", null)).replaceAll(id -> Identifier.of(id).toString());
 		CONFIG.subscribeToWhitelist( whitelist -> whitelist.replaceAll(id -> Identifier.of(id).toString()));
 
 		HudRenderCallback.EVENT.register(Identifier.of("pocketwatch:render"), (context, tickDelta) -> {
